@@ -3,6 +3,10 @@ greetings:
     clip: "doos.mp3"
     guilds:
       - 588789801923248184
+  - discord_name: Nyfin#7318
+    clip: "watermelon.mp3"
+    guilds:
+      - 588789801923248184
   # - discord_name: AMeyburgh#3947
   #   clip: "doos.mp3"
   #   guilds:
