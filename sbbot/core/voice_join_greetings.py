@@ -33,7 +33,7 @@ async def get_config() -> List[Greeting]:
         GREETINGS = [Greeting(**greeting) for greeting in data['greetings']]
 
         for greeting in GREETINGS:
-            greeting.clip = Path('data/audio')/greeting.clip
+            greeting.clip = Path('/data/audio')/greeting.clip
 
     return GREETINGS
 

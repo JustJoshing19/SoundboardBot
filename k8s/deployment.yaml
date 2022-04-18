@@ -23,6 +23,12 @@ spec:
         - mountPath: "/data/audio/"
           name: soundboardbot-pvc
           subPath: sbbot
+        env:
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: soundboardbot
+              key: discord_token
       volumes:
         - name: soundboardbot-pvc
           persistentVolumeClaim:
