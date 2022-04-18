@@ -22,4 +22,10 @@ spec:
         imagePullPolicy: Always
         name: soundboardbot
         resources: {}
+        env:
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: soundboardbot
+              key: discord_token
 status: {}
