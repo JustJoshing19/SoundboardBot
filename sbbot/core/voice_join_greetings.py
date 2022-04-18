@@ -7,14 +7,16 @@ from loguru import logger
 import yaml
 from discord import Client, Guild, VoiceChannel, Member
 from sbbot.core import play_audio
+from sbbot.core.config import is_local
 
-CHANNELLOCK = defaultdict(asyncio.Lock)
+GUILDLOCK = defaultdict(asyncio.Lock)
 
 @dataclass
 class Greeting:
     discord_name: str
     clip: Path
     guilds: List[int]
+    debug: bool = False
 
 GREETINGS: Optional[List[Greeting]] = None
 GREETING_STATES = defaultdict(lambda: False)
@@ -42,21 +44,25 @@ def set_state(username: str, voice_channel: VoiceChannel, value: bool):
 
 def get_voice_channels_from_guilds(guilds: List[Guild]) -> Iterator[VoiceChannel]:
     for guild in guilds:
-        yield from guild.voice_channels
+        for voice_channel in guild.voice_channels:
+            yield voice_channel, guild
 
 def get_full_username(member: Member) -> str:
     return f'{member.name}#{member.discriminator}'
 
 def get_active_voice_channel_for_user(guilds: List[Guild], username: str) -> Optional[VoiceChannel]:
-    for voice_channel in get_voice_channels_from_guilds(guilds):
+    for voice_channel, guild in get_voice_channels_from_guilds(guilds):
         logger.debug(f"Checking channel `{voice_channel.name}` for `{username}`")
         for member in voice_channel.members:
             logger.debug(f"In voice channel `{voice_channel.name}` member `{get_full_username(member)}`")
             if get_full_username(member) == username:
-                return voice_channel
-    return None
+                return voice_channel, guild
+    return None, None
 
 async def single_voice_greeting(client: Client, greeting: Greeting):
+    if greeting.debug and not is_local():
+        return
+
     guilds = []
     for guild_id in greeting.guilds:
         guild = client.get_guild(guild_id)
@@ -69,17 +75,17 @@ async def single_voice_greeting(client: Client, greeting: Greeting):
     )
 
     while True:
-        active_voice_channel = get_active_voice_channel_for_user(guilds, greeting.discord_name)
+        active_voice_channel, active_guild = get_active_voice_channel_for_user(guilds, greeting.discord_name)
 
         if active_voice_channel is not None:
             if not get_state(greeting.discord_name, active_voice_channel):
                 set_state(greeting.discord_name, active_voice_channel, True)
 
                 logger.info(f'Playing clip for {greeting.discord_name}')
-                async with CHANNELLOCK[active_voice_channel.id]:
+                async with GUILDLOCK[active_guild.id]:
                     await play_audio(active_voice_channel ,greeting.clip)
 
-        for voice_channel in get_voice_channels_from_guilds(guilds):
+        for voice_channel, _ in get_voice_channels_from_guilds(guilds):
             if active_voice_channel is None or voice_channel.id != active_voice_channel.id:
                 set_state(greeting.discord_name, voice_channel, False)
 
