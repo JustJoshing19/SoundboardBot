@@ -33,16 +33,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v2.0
       - name: Setup KubeConfig
         run:  |
           mkdir ~/.kube
           touch ~/.kube/config
+          chmod 777 ~/.kube/config
           echo $KUBECONFIG_DATA > ~/.kube/config
         env:
           KUBECONFIG_DATA : ${{secrets.KUBECONFIG_DATA}}
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v2.0
+      - name: Kubectl Version
+        run: kubectl version
       - name: Configure k8s Deployment
-        run: kubectl apply -f k8s/deployment.yaml
+        run: kubectl apply -f ./k8s/deployment.yaml
       - name: Update k8s Deployment
         run: kubectl rollout restart deployment/soundboardbot
