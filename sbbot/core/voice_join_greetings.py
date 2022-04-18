@@ -33,7 +33,7 @@ async def get_config() -> List[Greeting]:
         GREETINGS = [Greeting(**greeting) for greeting in data['greetings']]
 
         for greeting in GREETINGS:
-            greeting.clip = Path('data/audio')/greeting.clip
+            greeting.clip = Path('/data/audio')/greeting.clip
 
     return GREETINGS
 
@@ -61,7 +61,7 @@ def get_active_voice_channel_for_user(guilds: List[Guild], username: str) -> Opt
     return None, None
 
 async def single_voice_greeting(client: Client, greeting: Greeting):
-    if greeting.debug and not is_local():
+    if greeting.debug != is_local():
         return
 
     guilds = []
