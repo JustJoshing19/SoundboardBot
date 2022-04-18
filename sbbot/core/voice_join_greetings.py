@@ -8,6 +8,8 @@ import yaml
 from discord import Client, Guild, VoiceChannel, Member
 from sbbot.core import play_audio
 
+CHANNELLOCK = defaultdict(asyncio.Lock)
+
 @dataclass
 class Greeting:
     discord_name: str
@@ -74,7 +76,8 @@ async def single_voice_greeting(client: Client, greeting: Greeting):
                 set_state(greeting.discord_name, active_voice_channel, True)
 
                 logger.info(f'Playing clip for {greeting.discord_name}')
-                await play_audio(active_voice_channel ,greeting.clip)
+                async with CHANNELLOCK[active_voice_channel.id]:
+                    await play_audio(active_voice_channel ,greeting.clip)
 
         for voice_channel in get_voice_channels_from_guilds(guilds):
             if active_voice_channel is None or voice_channel.id != active_voice_channel.id:
