@@ -19,8 +19,9 @@ class Greeting:
     debug: bool = False
 
 GREETINGS: Optional[List[Greeting]] = None
-GREETING_STATES = defaultdict(lambda: False)
-
+GREETING_STATES = defaultdict(lambda: True) # Its assumed everyone is already in a channel so that
+                                            # when the bot restarts it wont play audio for people in a channel
+                                            # but this will still play audio when someone joins after restart
 async def get_config() -> List[Greeting]:
     global GREETINGS
 
