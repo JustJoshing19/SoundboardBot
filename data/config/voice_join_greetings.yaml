@@ -7,8 +7,8 @@ greetings:
     clip: "watermelon.mp3"
     guilds:
       - 588789801923248184
-  # - discord_name: AMeyburgh#3947
-  #   clip: "doos.mp3"
-  #   debug: True
-  #   guilds:
-  #     - 588789801923248184
+  - discord_name: AMeyburgh#3947
+    clip: "doos.mp3"
+    debug: True
+    guilds:
+      - 588789801923248184

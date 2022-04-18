@@ -10,10 +10,8 @@ spec:
   selector:
     matchLabels:
       app: soundboardbot
-  strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: soundboardbot
     spec:
@@ -21,5 +19,11 @@ spec:
       - image: annekinmeyburgh/soundboardbot:latest
         imagePullPolicy: Always
         name: soundboardbot
-        resources: {}
-status: {}
+        volumeMounts:
+        - mountPath: "/data/audio/"
+          name: soundboardbot-pvc
+          subPath: sbbot
+      volumes:
+        - name: soundboardbot-pvc
+          persistentVolumeClaim:
+            claimName: soundboardbot
