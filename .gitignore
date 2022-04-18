@@ -132,3 +132,6 @@ dmypy.json
 ffmpeg
 poetry.lock
 .vscode/
+
+**/.DS_Store
+**tmp
